@@ -3,20 +3,19 @@
 import { useEffect, useState } from "react";
 import { loadWasmModule } from "./utils/wasm";
 
+type wams_add = (a: number, b: number) => number;
+
 export default function Home() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [add, setAdd] = useState<((a: number, b: number) => number) | null>(null);
+    const [add, setAdd] = useState<wams_add | null>(null);
 
     useEffect(() => {
         async function init() {
             try {
                 const math = await loadWasmModule("example");
 
-                const add = math.add as (
-                    a: number,
-                    b: number
-                ) => number;
+                const add = math.add as wams_add;
 
                 setAdd(() =>add);
             } catch (err) {

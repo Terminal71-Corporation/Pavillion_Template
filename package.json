@@ -1,0 +1,32 @@
+{
+  "name": "terminal71-repository-template",
+  "version": "1.0.0",
+  "description": "Template Repository for Terminal71 Project",
+  "main": "initialize.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "initialize": "node initialize.js",
+    "build": "docker compose build",
+    "build:frontend": "node initialize.js && docker compose build frontend",
+    "build:backend": "node initialize.js && docker compose build backend",
+    "up": "docker compose up",
+    "up:frontend": "docker compose up frontend",
+    "up:backend": "docker compose up backend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Terminal71-Corporation/Terminal71-Repository-Template.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Terminal71-Corporation/Terminal71-Repository-Template/issues"
+  },
+  "homepage": "https://github.com/Terminal71-Corporation/Terminal71-Repository-Template#readme"
+}
+
