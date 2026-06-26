@@ -13,8 +13,8 @@
     "build:frontend": "node initialize.js && docker compose build frontend",
     "build:backend": "node initialize.js && docker compose build backend",
     "up": "docker compose up",
-    "up:frontend": "docker compose up frontend",
-    "up:backend": "docker compose up backend"
+    "up:frontend": "node initialize.js && docker compose up frontend",
+    "up:backend": "node initialize.js && docker compose up backend"
   },
   "repository": {
     "type": "git",
