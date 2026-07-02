@@ -1,6 +1,6 @@
 # Pavillion Module Declaration — AI Reference Prompt
 
-> **For AI assistants.** This document teaches you how to declare a NOVEx Engineering Tech module that is compatible with the **Pavillion package manager** (`pavillion.bat`) and the **Novex DevDoc Standard**. Read this fully before generating any module.
+> **For AI assistants.** This document teaches you how to declare a NOVEx Engineering Tech module that is compatible with the **Pavillion package manager** (`pavillion.bat`). Read this fully before generating any module.
 
 ---
 

@@ -1,5 +1,5 @@
 {
-  "module_name": "Standard WASM Module",
+  "module_name": "stdwasm",
   "author": ["IzanamiiDevv"],
   "module_id": "UTL-WASM-001",
   "version": 1,
