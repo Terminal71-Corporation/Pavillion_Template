@@ -506,4 +506,4 @@ DependsOn:  LIB-AUTH-001   # signIn — session depends on auth state
 
 ---
 
-*NOVEx Engineering Tech. · Pavillion AI Reference · Internal Use Only*
+*Pavillion AI Reference · Internal Use Only*
