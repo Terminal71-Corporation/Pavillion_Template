@@ -1,7 +1,7 @@
 /**
  * @uuid         UTL-WASM-001
  * @author       IzanamiiDevv
- * @time         2026-07-02 00:00
+ * @time         2026-07-02
  * @dependsOn    none
  *
  * @description
@@ -46,9 +46,9 @@ const info: WebAssembly.Imports = {
 }
 
 /**
- * @uuid         UTL-WASM-001
+ * @uuid         UTL-WASM-001:loadWasmModule
  * @author       IzanamiiDevv
- * @time         2026-07-02 00:00
+ * @time         2026-07-02
  * @dependsOn    none
  *
  * @description
@@ -57,7 +57,7 @@ const info: WebAssembly.Imports = {
  */
 
 /**
- * @uniqueid UTL-WASM-001
+ * @uniqueid UTL-WASM-001:loadWasmModule
  *
  * Loads a WebAssembly module by name, returning its exports.
  * Results are cached in memory — repeated calls with the same name skip the fetch.
