@@ -1,26 +1,42 @@
 # Pavillion Module Declaration — AI Reference Prompt
 
-> **For AI assistants.** This document teaches you how to declare a NOVEx Engineering Tech module that is compatible with the **Pavillion package manager** (`pavillion.bat`). Read this fully before generating any module.
+> **For AI assistants.** This document teaches you how to declare a module that is compatible with the **Pavillion package manager** (`pavillion.bat`). Read this fully before generating any module.
 
 ---
 
 ## What a "Module" Is
 
-A Pavillion module is a self-contained, installable unit of code. It lives across one or more of these three scopes inside a NOVEx project:
+A Pavillion module is a self-contained, installable unit of code. It lives across one or more of these three scopes inside a project:
 
 | Scope | Folder | What goes here |
 |---|---|---|
-| `lib` | `frontend/src/app/lib/<ModuleName>/` | Side-effectful libraries (auth, API clients, DB, email…) |
-| `utils` | `frontend/src/app/utils/<ModuleName>/` | Pure stateless helper functions (string, date, number…) |
-| `components` | `frontend/src/app/components/<ModuleName>/` | Reusable React UI components |
+| `lib` | `frontend/src/lib/<ModuleName>/` | Side-effectful libraries (auth, API clients, DB, email…) |
+| `utils` | `frontend/src/utils/<ModuleName>/` | Pure stateless helper functions (string, date, number…) |
+| `components` | `frontend/src/components/<ModuleName>/` | Reusable React UI components |
 
 The **manifest** (`pavillion.module.json`) lives separately at:
 
 ```
-frontend/src/app/module/<ModuleName>/pavillion.module.json
+frontend/src/module/<ModuleName>/pavillion.module.json
 ```
 
 It is the **only** thing inside `module/`. Never put source code there.
+
+---
+
+## Before Generating a Module — Ask the User
+
+Before writing any code, if the user hasn't already provided all of the following, ask them to fill in:
+
+```
+Module Name:      (use "_" instead of spaces, lowercase — e.g. std_benv)
+ModuleID/Artifact: (CATEGORY-SCOPE-NUMBER, e.g. LIB-CFG-002)
+Author:
+Version:
+Uses:              (lib / utils / components — one or more)
+```
+
+Only proceed to generate scopes once these five fields are known. The user may still supply source code or a description per scope alongside this.
 
 ---
 
@@ -29,10 +45,11 @@ It is the **only** thing inside `module/`. Never put source code there.
 A user will describe a module like this:
 
 ```
-Module name: Example Module
-Module ID: LIB-AUTH-001
-Version: 1
+Module Name: std_benv
+ModuleID/Artifact: LIB-CFG-002
 Author: IzanamiiDevv
+Version: 1
+Uses: lib
 Depends on: (none / or list other module_names)
 
 Lib: <source code or description>
@@ -90,7 +107,7 @@ This is what `pavillion install` reads. **Every field is required.**
 |---|---|---|
 | `module_name` | `string` | Human-readable display name. Must match how other modules reference it in `depends_on`. |
 | `author` | `string[]` | GitHub handles or full names in an array. |
-| `module_id` | `string` | Unique ID in `CATEGORY-SCOPE-NUMBER` format. See Unique ID section below. |
+| `module_id` | `string` | Unique ID in `CATEGORY-SCOPE-NUMBER` format. This is the module's single **Artifact** — see section below. |
 | `version` | `number` | Integer. Starts at `1`. Increment on breaking changes. |
 | `depends_on` | `string[]` | Array of `module_name` values of required modules. Empty array if none. |
 | `uses` | `string[]` | Which scopes this module provides. Values: `"lib"`, `"utils"`, `"components"`. |
@@ -100,13 +117,15 @@ This is what `pavillion install` reads. **Every field is required.**
 
 ---
 
-## 2. Unique ID Convention
+## 2. The Artifact ID Convention
 
-Every module, file, and function gets a unique ID in this format:
+Each module gets **exactly one** unique ID, called the **Artifact**, in this format:
 
 ```
 <CATEGORY>-<SCOPE>-<NUMBER>
 ```
+
+This is a **module-level** ID only — it is not regenerated per function. It is set once, in `pavillion.module.json` as `module_id`, and reused as the `@uuid` in every file header inside that module.
 
 | Category | Prefix | Example |
 |---|---|---|
@@ -115,9 +134,23 @@ Every module, file, and function gets a unique ID in this format:
 | Component | `CMP` | `CMP-BTN-001` |
 
 **Scope** is a short lowercase keyword matching the module's domain (see scope tables below).
-**Number** is zero-padded to 3 digits and increments per function within the scope.
+**Number** is zero-padded to 3 digits and increments per module within the scope (not per function).
 
-The **module-level ID** (e.g. `LIB-AUTH-001`) is assigned to the first export. Subsequent exports get `002`, `003`, etc.
+### Identifying individual functions
+
+When a module exports more than one function, identify each one by appending `:<functionName>` to the Artifact:
+
+```
+<Artifact>:<functionName>
+```
+
+For example, if the Artifact is `LIB-CFG-002`:
+
+- `LIB-CFG-002:get`
+- `LIB-CFG-002:list`
+- `LIB-CFG-002:expected`
+
+There is only ever **one Artifact per module** — every function reference is that same Artifact with a `:functionName` suffix, never a new incrementing number.
 
 ---
 
@@ -174,13 +207,13 @@ The **module-level ID** (e.g. `LIB-AUTH-001`) is assigned to the first export. S
 
 ## 4. `index.ts` / `index.tsx` — Global Module Header
 
-Every `index.ts` and `index.tsx` (and `style.css`) must start with a **Global Module Header**:
+Every `index.ts` and `index.tsx` (and `style.css`) must start with a **Global Module Header**. Note `@uuid` is always the module's single Artifact, and `Date` replaces the old time field:
 
 ```ts
 /**
  * @uuid         LIB-AUTH-001
  * @author       Rafael Luis J. Oli
- * @time         2026-06-28 11:00 PM
+ * @date         2026/06/28
  * @dependsOn    none
  *
  * @description
@@ -194,13 +227,13 @@ Every `index.ts` and `index.tsx` (and `style.css`) must start with a **Global Mo
  */
 ```
 
-Then each **exported function** gets a **Function Header** directly above it:
+Then each **exported function** gets a **Function Header** directly above it, using `<Artifact>:<functionName>` for `@uuid`:
 
 ```ts
 /**
- * @uuid         LIB-AUTH-002
+ * @uuid         LIB-AUTH-001:exampleFn
  * @author       Rafael Luis J. Oli
- * @time         2026-06-28 11:00 PM
+ * @date         2026/06/28
  * @dependsOn    none
  *
  * @description
@@ -215,7 +248,7 @@ Plus JSDoc tags on each export:
 
 ```ts
 /**
- * @uniqueid LIB-AUTH-002
+ * @uniqueid LIB-AUTH-001:exampleFn
  *
  * Sends a GET request to the specified endpoint.
  *
@@ -245,7 +278,7 @@ export interface ExampleType {
 
 ## 6. `README.md` — Required Sections
 
-Every module must have a README with these exact sections:
+Every module must have a README with these exact sections. `Time` is now a plain `Date` in `YYYY/MM/DD` format:
 
 ```markdown
 # <Module Name>
@@ -253,8 +286,8 @@ Every module must have a README with these exact sections:
 ## Information
 
 Author:     <Full Name>
-Time:       <YYYY-MM-DD HH:MM>
-Unique ID:  <MODULE-ID-001>
+Time:       <YYYY/MM/DD>
+Unique ID:  <Artifact, e.g. LIB-EXM-001>
 Scope:      <scope keyword>
 
 ## Description
@@ -275,13 +308,13 @@ exampleFn("hello"); // => "Hello"
 
 ### functionName
 
-UUID:       LIB-EXM-001
+UUID:       LIB-EXM-001:functionName
 DependsOn:  none
 
 ### anotherFunction
 
-UUID:       LIB-EXM-002
-DependsOn:  LIB-EXM-001   # functionName — used internally
+UUID:       LIB-EXM-001:anotherFunction
+DependsOn:  LIB-EXM-001:functionName   # functionName — used internally
 
 ## Notes
 
@@ -293,11 +326,11 @@ Optional. Known limitations, deprecation notices, etc.
 | Situation | Value |
 |---|---|
 | No dependency | `none` |
-| One dependency | `<UUID>   # short description` |
-| Multiple | One `DependsOn:` line per UUID |
+| One dependency | `<Artifact:function>   # short description` |
+| Multiple | One `DependsOn:` line per Artifact:function reference |
 | External npm package | `none  # external: <package-name>` |
 
-> `DependsOn` in the README references **UUIDs**, not folder paths or function names.
+> `DependsOn` in the README references **Artifact:function identifiers**, not folder paths or bare function names.
 
 ---
 
@@ -306,26 +339,27 @@ Optional. Known limitations, deprecation notices, etc.
 **User input:**
 
 ```
-Module name: Auth Module
-Module ID: LIB-AUTH-001
-Version: 1
+Module Name: std_benv
+ModuleID/Artifact: LIB-CFG-002
 Author: IzanamiiDevv
+Version: 1
+Uses: lib
 Depends on: (none)
 
-Lib: Firebase auth wrapper — signIn, signOut, getSession
+Lib: Backend env access layer — get, list, expected (BENV_ prefix)
 ```
 
 **You generate:**
 
 ---
 
-### `module/AuthModule/pavillion.module.json`
+### `module/StdBEnv/pavillion.module.json`
 
 ```json
 {
-  "module_name": "Auth Module",
+  "module_name": "Std BEnv",
   "author": ["IzanamiiDevv"],
-  "module_id": "LIB-AUTH-001",
+  "module_id": "LIB-CFG-002",
   "version": 1,
   "depends_on": [],
   "uses": ["lib"]
@@ -334,173 +368,251 @@ Lib: Firebase auth wrapper — signIn, signOut, getSession
 
 ---
 
-### `lib/AuthModule/types.ts`
+### `lib/StdBEnv/types.ts`
 
 ```ts
-export interface Session {
-  uid: string
-  email: string
-  token: string
+export type EnvPrimitive = string | number | boolean
+
+export type EnvValueType = "string" | "number" | "boolean"
+
+export interface ExpectedEnvEntry {
+  parameter: string
+  key: string
+  placeholder: EnvPrimitive
+  type: EnvValueType
+  resolvedFrom: "env" | "placeholder"
 }
 ```
 
 ---
 
-### `lib/AuthModule/index.ts`
+### `lib/StdBEnv/index.ts`
 
 ```ts
 /**
- * @uuid         LIB-AUTH-001
+ * @uuid         LIB-CFG-002
  * @author       IzanamiiDevv
- * @time         2026-06-28 11:00 PM
+ * @date         2026/07/06
  * @dependsOn    none
  *
  * @description
- * Firebase authentication wrapper providing signIn, signOut,
- * and session retrieval with typed responses.
+ * Backend (Next.js server-side) environment access layer. Reads variables
+ * written under the BENV_ prefix, coerces them to the requested primitive
+ * type, falls back to a caller-supplied placeholder when missing, and
+ * tracks every requested parameter so the full env contract can be
+ * introspected later.
  *
  * @whereToUse
- * Import in pages/ or server-side route handlers that require
- * user authentication.
+ * Import in Next.js server code only — API routes, route handlers, server
+ * actions, middleware, and other code that never ships to the client
+ * bundle.
  *
  * @whenToUse
- * Use whenever a user needs to sign in, sign out, or when
- * a protected route must verify the current session.
+ * Use whenever server code needs to read a configuration value or secret
+ * from the environment (DB connection strings, API keys, port numbers,
+ * internal service URLs, etc). Never import this module from client
+ * components — BENV_ values are expected to include secrets.
  */
 
-import type { Session } from "./types"
+import type { EnvPrimitive, EnvValueType, ExpectedEnvEntry } from "./types"
+
+const PREFIX = "BENV_"
+
+const expectedRegistry = new Map<string, ExpectedEnvEntry>()
+
+function inferType(placeholder: EnvPrimitive): EnvValueType {
+  return typeof placeholder as EnvValueType
+}
+
+function coerce<T extends EnvPrimitive>(raw: string, placeholder: T): T {
+  if (typeof placeholder === "number") return Number(raw) as T
+  if (typeof placeholder === "boolean") return (raw.toLowerCase() === "true") as unknown as T
+  return raw as unknown as T
+}
 
 /**
- * @uuid         LIB-AUTH-001
+ * @uuid         LIB-CFG-002:get
  * @author       IzanamiiDevv
- * @time         2026-06-28 11:00 PM
+ * @date         2026/07/06
  * @dependsOn    none
  *
  * @description
- * Signs in a user with email and password via Firebase Auth.
- * Returns a typed Session object on success.
+ * Reads a single backend environment parameter. Looks up BENV_<parameter>
+ * in process.env, coerces it to match the placeholder's type, and falls
+ * back to the placeholder if the key is absent or empty. Every call
+ * registers the parameter in the expected-env registry, regardless of
+ * whether it was found.
  */
 
 /**
- * @uniqueid LIB-AUTH-001
+ * @uniqueid LIB-CFG-002:get
  *
- * Signs in a user with email and password.
+ * Gets a typed backend env value, registering it as expected.
  *
- * @param email    - The user's email address.
- * @param password - The user's password.
- * @returns A Session object with uid, email, and token.
- * @throws {AuthError} When credentials are invalid.
+ * @param parameter   - The env parameter name, without the BENV_ prefix.
+ * @param placeholder - The fallback value; its type determines coercion.
+ * @returns The resolved value, either from process.env or the placeholder.
  */
-export async function signIn(email: string, password: string): Promise<Session> {
-  // implementation
+export function get<T extends EnvPrimitive>(parameter: string, placeholder: T): T {
+  const key = `${PREFIX}${parameter}`
+  const raw = process.env[key]
+  const found = raw !== undefined && raw !== ""
+  const value = found ? coerce(raw as string, placeholder) : placeholder
+
+  expectedRegistry.set(parameter, {
+    parameter,
+    key,
+    placeholder,
+    type: inferType(placeholder),
+    resolvedFrom: found ? "env" : "placeholder",
+  })
+
+  return value
 }
 
 /**
- * @uuid         LIB-AUTH-002
+ * @uuid         LIB-CFG-002:list
  * @author       IzanamiiDevv
- * @time         2026-06-28 11:00 PM
+ * @date         2026/07/06
  * @dependsOn    none
  *
  * @description
- * Signs out the currently authenticated user and clears the session.
+ * Scans process.env and returns every key currently defined under the
+ * BENV_ prefix. Reflects what is actually present in the .env file at
+ * runtime, not what the code expects.
  */
 
 /**
- * @uniqueid LIB-AUTH-002
+ * @uniqueid LIB-CFG-002:list
  *
- * Signs out the current user.
+ * Lists all BENV_-prefixed keys currently defined in process.env.
  *
- * @returns void
+ * @returns Array of full keys, e.g. ["BENV_DATABASE_URL", "BENV_PORT"]
  */
-export async function signOut(): Promise<void> {
-  // implementation
+export function list(): string[] {
+  return Object.keys(process.env).filter((k) => k.startsWith(PREFIX))
 }
 
 /**
- * @uuid         LIB-AUTH-003
+ * @uuid         LIB-CFG-002:expected
  * @author       IzanamiiDevv
- * @time         2026-06-28 11:00 PM
- * @dependsOn    LIB-AUTH-001
+ * @date         2026/07/06
+ * @dependsOn    LIB-CFG-002:get
  *
  * @description
- * Retrieves the active session for the currently signed-in user.
- * Returns null if no user is authenticated.
+ * Returns every parameter that has been requested via env.get() so far
+ * during this process's lifetime, along with its placeholder, inferred
+ * type, and whether it resolved from the environment or the fallback.
+ * Diffing this against env.list() surfaces parameters the code expects
+ * but that are missing from .env.
  */
 
 /**
- * @uniqueid LIB-AUTH-003
+ * @uniqueid LIB-CFG-002:expected
  *
- * Returns the current user session or null if unauthenticated.
+ * Lists all parameters requested via env.get(), i.e. the expected env
+ * contract of the running server.
  *
- * @returns Session | null
+ * @returns Array of ExpectedEnvEntry describing each requested parameter.
  */
-export async function getSession(): Promise<Session | null> {
-  // implementation
+export function expected(): ExpectedEnvEntry[] {
+  return Array.from(expectedRegistry.values())
 }
+
+export const env = { get, list, expected }
 ```
 
 ---
 
-### `lib/AuthModule/README.md`
+### `lib/StdBEnv/README.md`
 
 ```markdown
-# Auth Module
+# Std BEnv
 
 ## Information
 
 Author:     IzanamiiDevv
-Time:       2026-06-28 11:00 PM
-Unique ID:  LIB-AUTH-001
-Scope:      auth
+Time:       2026/07/06
+Unique ID:  LIB-CFG-002
+Scope:      config
 
 ## Description
 
-Firebase authentication wrapper providing signIn, signOut, and session
-retrieval with typed responses.
+Backend (Next.js server-side) environment access layer. Reads variables
+written under the BENV_ prefix, coerces them to the requested primitive
+type, falls back to a caller-supplied placeholder when missing, and
+tracks every requested parameter for later introspection.
 
 ## When to Use
 
-Use whenever a user needs to authenticate or when a protected route must
-verify the current session. Do not call Firebase Auth directly in feature code.
+Use in Next.js server code only — API routes, route handlers, server
+actions, middleware. This module is meant to hold secrets and
+server-only config, so never import it from a client component.
 
 ## How to Use
 
-import { signIn, getSession } from "@/lib/AuthModule";
+import { env } from "@/lib/StdBEnv";
 
-const session = await signIn("user@email.com", "password");
-const current = await getSession();
+app.listen(env.get<number>("PORT", 2222));
+const dbUrl = env.get<string>("DATABASE_URL", "postgres://localhost:5432/dev");
+const strictMode = env.get<boolean>("STRICT_MODE", true);
+
+// What's actually defined in .env right now:
+env.list();      // => ["BENV_PORT", "BENV_DATABASE_URL"]
+
+// What the app expects, whether present or not:
+env.expected();  // => [{ parameter: "PORT", key: "BENV_PORT", ... }, ...]
 
 ## Exported APIs
 
-### signIn
+### get
 
-UUID:       LIB-AUTH-001
+UUID:       LIB-CFG-002:get
 DependsOn:  none
 
-### signOut
+### list
 
-UUID:       LIB-AUTH-002
+UUID:       LIB-CFG-002:list
 DependsOn:  none
 
-### getSession
+### expected
 
-UUID:       LIB-AUTH-003
-DependsOn:  LIB-AUTH-001   # signIn — session depends on auth state
+UUID:       LIB-CFG-002:expected
+DependsOn:  LIB-CFG-002:get
+
+## Notes
+
+- Env keys are always looked up as `BENV_<parameter>` — pass the parameter
+  name without the prefix.
+- The expected-env registry is in-memory and per-process; it only reflects
+  parameters that have actually been requested via `get()` since the
+  process started.
+- Boolean coercion treats the string `"true"` (case-insensitive) as `true`
+  and everything else as `false`.
+- Empty-string env values are treated the same as missing — the
+  placeholder is used and the entry is marked `resolvedFrom: "placeholder"`.
+- Since this module lives under `lib/` (server-only by convention), it is
+  safe to read secrets here that would never be safe under `StdFEnv`.
 ```
 
 ---
 
 ## 8. Quick Checklist Before Submitting
 
-- [ ] `pavillion.module.json` is inside `module/<ModuleName>/` only
+- [ ] Asked the user for Module Name, ModuleID/Artifact, Author, Version, and Uses before generating (if not already given)
+- [ ] Module Name uses `_` instead of spaces and is lowercase (e.g. `std_benv`)
+- [ ] `pavillion.module.json` is inside `frontend/src/module/<ModuleName>/` only
+- [ ] Source scopes live under `frontend/src/lib/`, `frontend/src/utils/`, `frontend/src/components/` — **not** `frontend/src/app/...`
 - [ ] `uses` array lists every scope that has source files
 - [ ] `depends_on` uses `module_name` values, not IDs or paths
-- [ ] Every `index.ts`/`index.tsx`/`style.css` has a **Global Module Header**
-- [ ] Every exported function has a **Function Header** + **JSDoc block**
+- [ ] Every module has exactly **one** Artifact (`module_id` / `@uuid`) — never a new incrementing ID per function
+- [ ] Every function is identified as `<Artifact>:<functionName>` wherever a per-function reference is needed
+- [ ] Every `index.ts`/`index.tsx`/`style.css` has a **Global Module Header** with `@uuid` (Artifact) and `@date` (`YYYY/MM/DD`) — no `@time`
+- [ ] Every exported function has a **Function Header** (`@uuid` as `Artifact:functionName`) + **JSDoc block** (`@uniqueid` as `Artifact:functionName`)
 - [ ] `types.ts` has all interfaces — none exported from `index.ts`
 - [ ] README has all 6 required sections
-- [ ] Every export in README has a `UUID:` and `DependsOn:` line
-- [ ] `DependsOn` uses UUIDs, not names or paths
+- [ ] Every export in README has a `UUID:` (`Artifact:functionName`) and `DependsOn:` line
+- [ ] `DependsOn` uses `Artifact:functionName` references, not names or paths
 - [ ] `module_id` format is `CATEGORY-SCOPE-NUMBER` (zero-padded)
 - [ ] `style.css` exists only for `components` scopes
 

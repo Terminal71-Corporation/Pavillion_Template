@@ -4,7 +4,7 @@
 
 Author:     IzanamiiDevv
 Time:       2026-07-06 12:00 AM
-Unique ID:  LIB-CFG-004
+Unique ID:  LIB-CFG-002
 Scope:      config
 
 ## Description
@@ -38,18 +38,18 @@ env.expected();  // => [{ parameter: "PORT", key: "BENV_PORT", ... }, ...]
 
 ### get
 
-UUID:       LIB-CFG-004
+UUID:       LIB-CFG-002:get
 DependsOn:  none
 
 ### list
 
-UUID:       LIB-CFG-005
+UUID:       LIB-CFG-002:list
 DependsOn:  none
 
 ### expected
 
-UUID:       LIB-CFG-006
-DependsOn:  LIB-CFG-004   # get — expected registry is populated by get() calls
+UUID:       LIB-CFG-002:expected
+DependsOn:  LIB-CFG-002:get
 
 ## Notes
 

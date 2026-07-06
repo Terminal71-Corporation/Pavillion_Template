@@ -1,7 +1,7 @@
 /**
  * @uuid         LIB-CFG-001
  * @author       IzanamiiDevv
- * @time         2026-07-06 12:00 AM
+ * @time         2026-07-06
  * @dependsOn    none
  *
  * @description
@@ -40,9 +40,9 @@ function coerce<T extends EnvPrimitive>(raw: string, placeholder: T): T {
 }
 
 /**
- * @uuid         LIB-CFG-001
+ * @uuid         LIB-CFG-001:get
  * @author       IzanamiiDevv
- * @time         2026-07-06 12:00 AM
+ * @time         2026-07-06
  * @dependsOn    none
  *
  * @description
@@ -54,7 +54,7 @@ function coerce<T extends EnvPrimitive>(raw: string, placeholder: T): T {
  */
 
 /**
- * @uniqueid LIB-CFG-001
+ * @uniqueid LIB-CFG-001:get
  *
  * Gets a typed frontend env value, registering it as expected.
  *
@@ -80,9 +80,9 @@ export function get<T extends EnvPrimitive>(parameter: string, placeholder: T): 
 }
 
 /**
- * @uuid         LIB-CFG-002
+ * @uuid         LIB-CFG-001:list
  * @author       IzanamiiDevv
- * @time         2026-07-06 12:00 AM
+ * @time         2026-07-06
  * @dependsOn    none
  *
  * @description
@@ -92,7 +92,7 @@ export function get<T extends EnvPrimitive>(parameter: string, placeholder: T): 
  */
 
 /**
- * @uniqueid LIB-CFG-002
+ * @uniqueid LIB-CFG-001:list
  *
  * Lists all FENV_-prefixed keys currently defined in process.env.
  *
@@ -103,10 +103,10 @@ export function list(): string[] {
 }
 
 /**
- * @uuid         LIB-CFG-003
+ * @uuid         LIB-CFG-001:expected
  * @author       IzanamiiDevv
- * @time         2026-07-06 12:00 AM
- * @dependsOn    LIB-CFG-001
+ * @time         2026-07-06
+ * @dependsOn    LIB-CFG-001:get
  *
  * @description
  * Returns every parameter that has been requested via env.get() so far
@@ -117,7 +117,7 @@ export function list(): string[] {
  */
 
 /**
- * @uniqueid LIB-CFG-003
+ * @uniqueid LIB-CFG-001:expected
  *
  * Lists all parameters requested via env.get(), i.e. the expected env
  * contract of the running app.

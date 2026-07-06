@@ -36,7 +36,7 @@ additional fetch or compile occurs.
 
 ### loadWasmModule
 
-UUID:       UTL-WASM-001
+UUID:       UTL-WASM-001:loadWasmModule
 DependsOn:  none
 
 ## Notes

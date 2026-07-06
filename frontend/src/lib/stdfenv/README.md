@@ -40,18 +40,18 @@ env.expected();  // => [{ parameter: "API_BASE_URL", key: "FENV_API_BASE_URL", .
 
 ### get
 
-UUID:       LIB-CFG-001
+UUID:       LIB-CFG-001:get
 DependsOn:  none
 
 ### list
 
-UUID:       LIB-CFG-002
+UUID:       LIB-CFG-001:list
 DependsOn:  none
 
 ### expected
 
-UUID:       LIB-CFG-003
-DependsOn:  LIB-CFG-001   # get — expected registry is populated by get() calls
+UUID:       LIB-CFG-001:expected
+DependsOn:  LIB-CFG-001
 
 ## Notes
 
