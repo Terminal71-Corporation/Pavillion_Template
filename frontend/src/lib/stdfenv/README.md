@@ -3,7 +3,7 @@
 ## Information
 
 Author:     IzanamiiDevv
-Time:       2026-07-06 12:00 AM
+Time:       2026-07-06
 Unique ID:  LIB-CFG-001
 Scope:      config
 
@@ -24,6 +24,7 @@ inherently exposed to the client.
 
 ## How to Use
 
+```ts
 import { env } from "@/lib/StdFEnv";
 
 const apiBaseUrl = env.get<string>("API_BASE_URL", "http://localhost:3000");
@@ -35,6 +36,7 @@ env.list();      // => ["FENV_API_BASE_URL", "FENV_TIMEOUT_MS"]
 
 // What the app expects, whether present or not:
 env.expected();  // => [{ parameter: "API_BASE_URL", key: "FENV_API_BASE_URL", ... }, ...]
+```
 
 ## Exported APIs
 
@@ -51,7 +53,7 @@ DependsOn:  none
 ### expected
 
 UUID:       LIB-CFG-001:expected
-DependsOn:  LIB-CFG-001
+DependsOn:  LIB-CFG-001:get
 
 ## Notes
 

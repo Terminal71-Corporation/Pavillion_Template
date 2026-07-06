@@ -42,7 +42,7 @@ function coerce<T extends EnvPrimitive>(raw: string, placeholder: T): T {
 /**
  * @uuid         LIB-CFG-002:get
  * @author       IzanamiiDevv
- * @time         2026-07-06 12:00 AM
+ * @time         2026-07-06
  * @dependsOn    none
  *
  * @description
@@ -82,7 +82,7 @@ export function get<T extends EnvPrimitive>(parameter: string, placeholder: T): 
 /**
  * @uuid         LIB-CFG-002:list
  * @author       IzanamiiDevv
- * @time         2026-07-06 12:00 AM
+ * @time         2026-07-06
  * @dependsOn    none
  *
  * @description
@@ -105,7 +105,7 @@ export function list(): string[] {
 /**
  * @uuid         LIB-CFG-002:expected
  * @author       IzanamiiDevv
- * @time         2026-07-06 12:00 AM
+ * @time         2026-07-06
  * @dependsOn    LIB-CFG-002:get
  *
  * @description

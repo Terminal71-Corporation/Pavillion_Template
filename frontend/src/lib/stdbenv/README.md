@@ -3,7 +3,7 @@
 ## Information
 
 Author:     IzanamiiDevv
-Time:       2026-07-06 12:00 AM
+Time:       2026-07-06
 Unique ID:  LIB-CFG-002
 Scope:      config
 
@@ -22,6 +22,7 @@ server-only config, so never import it from a client component.
 
 ## How to Use
 
+```ts
 import { env } from "@/lib/StdBEnv";
 
 app.listen(env.get<number>("PORT", 2222));
@@ -33,6 +34,7 @@ env.list();      // => ["BENV_PORT", "BENV_DATABASE_URL"]
 
 // What the app expects, whether present or not:
 env.expected();  // => [{ parameter: "PORT", key: "BENV_PORT", ... }, ...]
+```
 
 ## Exported APIs
 
